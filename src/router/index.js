@@ -1,18 +1,25 @@
+import LandingView from '@/views/LandingView.vue'
+import MainLayout from '@/views/Layouts/MainLayout.vue'
+import QuestionsLayout from '@/views/Layouts/QuestionsLayout.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'layout',
+      component: MainLayout,
       children: [
+        {
+          path: '',
+          name: 'landing',
+          component: LandingView
+        },
         {
           path: '/questions',
           name: 'questions',
-          component: () => import('../views/QuestionsView.vue'),
+          component: QuestionsLayout,
           redirect: '/questions/budget',
           children: [
             {

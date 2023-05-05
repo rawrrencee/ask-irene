@@ -1,7 +1,7 @@
-<script setup lang="ts"></script>
+<script setup></script>
 <template>
   <!--From https://codepen.io/johanmouchet/pen/OXxvqM-->
-  <div class="cat">
+  <div class="cat ml-auto mr-auto mt-auto -mb-12">
     <div class="ear ear--left"></div>
     <div class="ear ear--right"></div>
     <div class="face">
