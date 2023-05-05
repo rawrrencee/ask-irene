@@ -23,8 +23,10 @@ defineEmits(['update:appPage'])
     leave-from="opacity-100"
     leave-to="opacity-0"
   >
-    <div class="h-full">
-      <slot />
+    <div class="h-full flex flex-col">
+      <div class="grow">
+        <slot />
+      </div>
       <div class="mt-auto flex justify-between gap-4 sticky bottom-0 pt-12">
         <button class="grow btn" @click="$emit('update:appPage', backPath)">Back</button>
         <button

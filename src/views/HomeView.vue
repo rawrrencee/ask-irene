@@ -30,7 +30,7 @@ const showBgCat = ref(appPage.value !== PAGES.LANDING)
 
 const onUpdateAppPage = (val) => {
   appPage.value = val
-  if (val === previousPage.value) router.back()
+  if (val === previousPage.value) router.replace(val)
   else router.push(val)
 }
 
@@ -62,7 +62,7 @@ const routeToQuestionsPage = () => {
         </div>
       </div>
       <div class="grow h-full w-full bg-white rounded-lg shadow-lg p-6 overflow-y-auto">
-        <div class="text-center z-20 h-full">
+        <div :class="[isLanding ? 'h-content' : 'h-full', 'text-center z-20']">
           <router-view :currentPath="$route.path" @update:app-page="onUpdateAppPage"></router-view>
           <TransitionRoot
             appear
@@ -94,7 +94,7 @@ const routeToQuestionsPage = () => {
                 Irene)</span
               >
             </div>
-            <div class="flex items-center justify-center gap-x-6 mb-6">
+            <div class="flex items-center justify-center gap-x-6">
               <button class="btn btn-primary" @click="() => routeToQuestionsPage()">
                 Get started
               </button>
