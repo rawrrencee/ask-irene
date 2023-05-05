@@ -1,13 +1,7 @@
 <script setup>
 import { ACTIVITIES } from '@/constants'
-import { TransitionRoot } from '@headlessui/vue'
+import { Listbox, ListboxOption, ListboxOptions, TransitionRoot } from '@headlessui/vue'
 
-import {
-  RadioGroup,
-  RadioGroupDescription,
-  RadioGroupLabel,
-  RadioGroupOption
-} from '@headlessui/vue'
 import { ref } from 'vue'
 
 const categoriesMap = new Map()
@@ -20,11 +14,11 @@ categories.forEach((c) => {
   const tagsFromActivities = ACTIVITIES.filter((a) => a.category === c).map((a) => a.tags)
   tagsFromActivities.forEach((t) => {
     const tags = t.split(', ')
-    tags.forEach((t) => tagsMap.set(t))
+    tags.forEach((t) => !!t && t !== '' && tagsMap.set(t))
   })
   categoriesMap.set(c, Array.from(tagsMap.keys()))
 })
-const selectedCategory = ref(categories[0])
+const selectedCategories = ref([])
 </script>
 
 <template>
@@ -47,54 +41,53 @@ const selectedCategory = ref(categories[0])
           Please select a category of activity you'd like to show recommendations for.
         </p>
       </div>
-      <div class="">
-        <RadioGroup v-model="selectedCategory">
-          <RadioGroupLabel class="sr-only">Category</RadioGroupLabel>
+      <Listbox multiple v-model="selectedCategories">
+        <ListboxOptions as="div" static>
           <div class="space-y-4">
-            <RadioGroupOption
-              as="template"
+            <ListboxOption
+              v-slot="{ active, selected }"
               v-for="category in categories"
               :key="category"
               :value="category"
-              v-slot="{ checked, active }"
+              as="template"
             >
               <div
                 :class="[
                   active
                     ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
                     : '',
-                  checked ? 'bg-sky-900 bg-opacity-75 text-white ' : 'bg-white '
+                  selected ? 'bg-sky-900 bg-opacity-75 text-white ' : 'bg-white '
                 ]"
                 class="relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none"
               >
                 <div class="flex w-full items-center justify-between">
                   <div class="flex items-center">
                     <div class="text-sm">
-                      <RadioGroupLabel
+                      <p
                         as="p"
-                        :class="checked ? 'text-white' : 'text-gray-900'"
+                        :class="selected ? 'text-white' : 'text-gray-900'"
                         class="font-medium"
                       >
                         {{ category }}
-                      </RadioGroupLabel>
-                      <RadioGroupDescription
-                        as="span"
-                        :class="checked ? 'text-sky-100' : 'text-gray-500'"
-                        class="inline"
-                      >
+                      </p>
+                      <span :class="selected ? 'text-sky-100' : 'text-gray-500'" class="inline">
                         <span>Tags:&nbsp;</span>
                         <template v-for="(tag, i) in categoriesMap.get(category)" :key="tag">
-                          <span class="block sm:inline"
+                          <span class="inline"
                             >{{ tag
-                            }}<span v-if="i !== categoriesMap.get(category).length - 1"
+                            }}<span
+                              v-if="
+                                categoriesMap.get(category).length > 1 &&
+                                i !== categoriesMap.get(category).length - 1
+                              "
                               >,&nbsp;</span
                             ></span
                           >
                         </template>
-                      </RadioGroupDescription>
+                      </span>
                     </div>
                   </div>
-                  <div v-show="checked" class="shrink-0 text-white">
+                  <div v-show="selected" class="shrink-0 text-white">
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="12" r="12" fill="#fff" fill-opacity="0.2" />
                       <path
@@ -108,10 +101,10 @@ const selectedCategory = ref(categories[0])
                   </div>
                 </div>
               </div>
-            </RadioGroupOption>
+            </ListboxOption>
           </div>
-        </RadioGroup>
-      </div>
+        </ListboxOptions>
+      </Listbox>
     </div>
   </TransitionRoot>
 </template>
