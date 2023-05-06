@@ -1,24 +1,39 @@
 <script setup>
 import { ACTIVITIES } from '@/constants'
+import { useAppStore } from '@/stores'
 import { Listbox, ListboxOption, ListboxOptions, TransitionRoot } from '@headlessui/vue'
 
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+
+const store = useAppStore()
 
 const categoriesMap = new Map()
 ACTIVITIES.forEach((a) => {
   categoriesMap.set(a.category)
 })
 const categories = Array.from(categoriesMap.keys())
-categories.forEach((c) => {
-  const tagsMap = new Map()
-  const tagsFromActivities = ACTIVITIES.filter((a) => a.category === c).map((a) => a.tags)
-  tagsFromActivities.forEach((t) => {
-    const tags = t.split(', ')
-    tags.forEach((t) => !!t && t !== '' && tagsMap.set(t))
+categories
+  .sort((a, b) => {
+    if (a < b) return -1
+    if (a > b) return 1
+    return 0
   })
-  categoriesMap.set(c, Array.from(tagsMap.keys()))
+  .forEach((c) => {
+    const activitiesInCategory = ACTIVITIES.filter((a) => a.category === c)
+    const tagsMap = new Map()
+    const tagsFromActivities = activitiesInCategory.map((a) => a.tags)
+    tagsFromActivities.forEach((t) => {
+      const tags = t.split(', ')
+      tags.forEach((t) => !!t && t !== '' && tagsMap.set(t))
+    })
+    categoriesMap.set(c, { tags: Array.from(tagsMap.keys()), count: activitiesInCategory.length })
+  })
+const selectedCategories = ref(store.answers.categories ?? [])
+store.answers.categories = selectedCategories.value
+
+watch(selectedCategories, () => {
+  store.answers.categories = selectedCategories.value
 })
-const selectedCategories = ref([])
 </script>
 
 <template>
@@ -38,7 +53,7 @@ const selectedCategories = ref([])
       <div class="flex flex-col gap-2">
         <h2 class="text-2xl font-semibold leading-7 text-gray-900">Category</h2>
         <p class="mt-1 text-sm leading-6 text-gray-600">
-          Please select a category of activity you'd like to show recommendations for.
+          Please select the categories you'd like to see activity recommendations for.
         </p>
       </div>
       <Listbox multiple v-model="selectedCategories">
@@ -68,23 +83,21 @@ const selectedCategories = ref([])
                         :class="selected ? 'text-white' : 'text-gray-900'"
                         class="font-medium"
                       >
-                        {{ category }}
+                        {{ category }}&nbsp;({{ categoriesMap.get(category).count }})
                       </p>
-                      <span :class="selected ? 'text-sky-100' : 'text-gray-500'" class="inline">
-                        <span>Tags:&nbsp;</span>
-                        <template v-for="(tag, i) in categoriesMap.get(category)" :key="tag">
-                          <span class="inline"
-                            >{{ tag
-                            }}<span
-                              v-if="
-                                categoriesMap.get(category).length > 1 &&
-                                i !== categoriesMap.get(category).length - 1
-                              "
-                              >,&nbsp;</span
-                            ></span
+                      <div
+                        :class="[
+                          selected ? 'text-sky-100' : 'text-gray-500',
+                          'flex flex-wrap gap-2 mt-2'
+                        ]"
+                      >
+                        <template v-for="tag in categoriesMap.get(category).tags" :key="tag">
+                          <span
+                            class="items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+                            >{{ tag }}</span
                           >
                         </template>
-                      </span>
+                      </div>
                     </div>
                   </div>
                   <div v-show="selected" class="shrink-0 text-white">

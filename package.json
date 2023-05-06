@@ -13,6 +13,7 @@
     "@headlessui/vue": "^1.7.13",
     "@heroicons/vue": "^2.0.17",
     "@tailwindcss/typography": "^0.5.9",
+    "@vueuse/core": "^10.1.2",
     "autoprefixer": "^10.4.14",
     "daisyui": "^2.51.6",
     "pinia": "^2.0.35",

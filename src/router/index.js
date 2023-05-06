@@ -1,6 +1,7 @@
 import LandingView from '@/views/LandingView.vue'
 import MainLayout from '@/views/Layouts/MainLayout.vue'
 import QuestionsLayout from '@/views/Layouts/QuestionsLayout.vue'
+import ResultsView from '@/views/ResultsView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -28,21 +29,31 @@ const router = createRouter({
               component: () => import('../views/Questions/BudgetView.vue')
             },
             {
-              path: 'size',
-              name: 'size',
-              component: () => import('../views/Questions/SizeView.vue')
-            },
-            {
               path: 'category',
               name: 'category',
               component: () => import('../views/Questions/CategoryView.vue')
             },
             {
-              path: 'location',
-              name: 'location',
-              component: () => import('../views/Questions/LocationView.vue')
+              path: 'distance',
+              name: 'distance',
+              component: () => import('../views/Questions/DistanceView.vue')
+            },
+            {
+              path: 'size',
+              name: 'size',
+              component: () => import('../views/Questions/SizeView.vue')
+            },
+            {
+              path: 'summary',
+              name: 'summary',
+              component: () => import('../views/Questions/SummaryView.vue')
             }
           ]
+        },
+        {
+          path: '/results',
+          name: 'results',
+          component: ResultsView
         }
       ]
     }
