@@ -1,10 +1,12 @@
 <script setup>
 import { PAGES, QUESTIONS_PAGES } from '@/constants'
+import { useAppStore } from '@/stores'
 import { TransitionRoot } from '@headlessui/vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const store = useAppStore()
 
 const questionPaths = Object.keys(QUESTIONS_PAGES).map((k) => QUESTIONS_PAGES[k])
 const previousPath = computed(() => {
@@ -16,6 +18,19 @@ const previousPath = computed(() => {
   return undefined
 })
 const nextPath = computed(() => {
+  if (route.name === QUESTIONS_PAGES.SUMMARY) {
+    if (
+      Object.keys(store.answers).every(
+        (k) =>
+          (!Array.isArray(store.answers[k]) && (store.answers[k] === 0 || !!store.answers[k])) ||
+          (Array.isArray(store.answers[k]) && store.answers[k].length > 0)
+      )
+    ) {
+      return PAGES.RESULTS
+    }
+    return undefined
+  }
+
   const currentPathIndex = questionPaths.findIndex((p) => route.path.includes(p))
   if (currentPathIndex < questionPaths.length) {
     return questionPaths[currentPathIndex + 1]
@@ -41,7 +56,10 @@ const nextPath = computed(() => {
       leave-from="opacity-100"
       leave-to="opacity-0"
     >
-      <button class="grow btn" @click="() => $router.push({ name: previousPath ?? PAGES.LANDING })">
+      <button
+        class="grow btn btn-outline btn-primary bg-neutral-100"
+        @click="() => $router.push({ name: previousPath ?? PAGES.LANDING })"
+      >
         Back
       </button>
       <button
