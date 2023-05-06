@@ -33,7 +33,7 @@ const onUpdateIsNotImplementedDialogShown = (val) => {
 </script>
 
 <template>
-  <div class="flex flex-col justify-between">
+  <div class="h-full flex flex-col justify-between">
     <TransitionRoot
       appear
       :show="true"
