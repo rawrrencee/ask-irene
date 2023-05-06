@@ -1,8 +1,8 @@
 <script setup>
+import SummaryDescriptionItem from '@/components/SummaryDescriptionItem.vue'
 import { QUESTIONS_PAGES } from '@/constants'
 import { useAppStore } from '@/stores'
 import { TransitionRoot } from '@headlessui/vue'
-import SummaryDescriptionItem from '../../components/SummaryDescriptionItem.vue'
 
 const store = useAppStore()
 </script>
@@ -31,7 +31,7 @@ const store = useAppStore()
             label="Budget"
             :value="
               store.answers.budget === 0 || !!store.answers.budget
-                ? `S$ ${store.answers.budget}`
+                ? `S$ ${store.answers.budget} maximum`
                 : undefined
             "
             :edit-path="QUESTIONS_PAGES.BUDGET"
