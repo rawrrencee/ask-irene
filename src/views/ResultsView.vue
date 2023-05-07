@@ -22,6 +22,10 @@ import NotImplementedDialog from '@/components/NotImplementedDialog.vue'
 import { BarsArrowDownIcon, BarsArrowUpIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
 const store = useAppStore()
+const isLoading = ref(true)
+setTimeout(() => {
+  isLoading.value = false
+}, 700)
 
 const filteredResults = ACTIVITIES.filter(
   (a) =>
@@ -87,9 +91,13 @@ watch(selectedSortBy, (sortBy) => {
 
 <template>
   <div class="h-full flex flex-col justify-between">
+    <div class="flex flex-col h-full justify-center items-center" v-if="isLoading">
+      <img src="@/assets/github-loading.gif" class="h-20 w-20" />
+      <span class="pt-4 font-medium">Loading...</span>
+    </div>
     <TransitionRoot
       appear
-      :show="true"
+      :show="!isLoading"
       as="div"
       class="flex flex-col"
       enter="transition-opacity duration-700"
@@ -269,23 +277,23 @@ watch(selectedSortBy, (sortBy) => {
                             </div>
                             <div class="text-xs flex flex-col gap-2">
                               <div class="flex gap-3 items-center">
-                                <CurrencyDollarIcon class="h-3 w-3 shrink-0" />
+                                <CurrencyDollarIcon class="h-5 w-5 shrink-0" />
                                 <span v-if="result.averageCost > 0"
                                   >S$ {{ result.averageCost }} per pax</span
                                 >
                                 <span v-else>Free</span>
                               </div>
                               <div class="flex gap-3 items-center">
-                                <MapPinIcon class="h-3 w-3 shrink-0" />
+                                <MapPinIcon class="h-5 w-5 shrink-0" />
                                 <span>{{ result.address }}</span>
                               </div>
                               <div class="flex gap-3 items-center">
-                                <UserGroupIcon class="h-3 w-3 shrink-0" />
+                                <UserGroupIcon class="h-5 w-5 shrink-0" />
                                 <span>{{
                                   ((result.minParticipants === 0 || !!result.minParticipants) &&
                                     result.maxParticipants === 0) ||
                                   !!result.maxParticipants
-                                    ? `${result.minParticipants} minimum - ${result.maxParticipants} maximum.`
+                                    ? `${result.minParticipants} minimum - ${result.maxParticipants} maximum`
                                     : `Not available`
                                 }}</span>
                               </div>

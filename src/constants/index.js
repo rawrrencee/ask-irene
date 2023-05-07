@@ -423,5 +423,35 @@ export const ACTIVITIES = [
     distanceFromIras: 1,
     googleMapsUrl: 'https://goo.gl/maps/7sXRRrHvezhVS8L2A',
     reservationUrl: 'http://www.twomenbagels.com/'
+  },
+  {
+    id: 28,
+    location: 'Omoté Novena',
+    activity: 'Japanese',
+    category: 'Food',
+    tags: 'Sashimi, Chirashi Don',
+    rating: 4,
+    minParticipants: 1,
+    maxParticipants: 40,
+    averageCost: 25,
+    address: '238 Thomson Rd, #03-09/10 Velocity @ Novena Square, Singapore 307683',
+    distanceFromIras: 1,
+    googleMapsUrl: 'https://goo.gl/maps/cwQzVHA9cun7yeD27',
+    reservationUrl: ''
+  },
+  {
+    id: 29,
+    location: 'Monster Curry - Novena Square',
+    activity: 'Japanese',
+    category: 'Food',
+    tags: 'Curry',
+    rating: 4.6,
+    minParticipants: 1,
+    maxParticipants: 20,
+    averageCost: 20,
+    address: '238 Thomson Rd, #02-78/79, Singapore 307683',
+    distanceFromIras: 1,
+    googleMapsUrl: 'https://goo.gl/maps/Biufp3koeiyrCLkU8',
+    reservationUrl: ''
   }
 ]
