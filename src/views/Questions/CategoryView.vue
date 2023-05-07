@@ -3,7 +3,7 @@ import { ACTIVITIES } from '@/constants'
 import { useAppStore } from '@/stores'
 import { Listbox, ListboxOption, ListboxOptions, TransitionRoot } from '@headlessui/vue'
 
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const store = useAppStore()
 
@@ -28,19 +28,20 @@ categories
     })
     categoriesMap.set(c, { tags: Array.from(tagsMap.keys()), count: activitiesInCategory.length })
   })
-const selectedSelectAll = ref(false)
 const selectedCategories = ref(store.answers.categories ?? [])
+const selectedSelectAll = computed(() => selectedCategories.value.length === categories.length)
 store.answers.categories = selectedCategories.value
+
+const toggleSelectAll = () => {
+  if (selectedSelectAll.value) {
+    selectedCategories.value = []
+  } else {
+    selectedCategories.value = [...categories]
+  }
+}
 
 watch(selectedCategories, () => {
   store.answers.categories = selectedCategories.value
-})
-watch(selectedSelectAll, (val) => {
-  if (val) {
-    selectedCategories.value = [...categories]
-  } else {
-    selectedCategories.value = []
-  }
 })
 </script>
 
@@ -65,15 +66,17 @@ watch(selectedSelectAll, (val) => {
         </p>
       </div>
       <div class="flex flex-col">
-        <label class="flex align-middle pb-3 cursor-pointer gap-2">
-          <input
-            type="checkbox"
-            v-model="selectedSelectAll"
-            class="checkbox"
-            @click="toggleSelectAll"
-          />
-          <span class="text-md text-neutral-400">Select All</span>
-        </label>
+        <div class="inline-flex">
+          <label class="flex pb-3 cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              v-model="selectedSelectAll"
+              class="checkbox"
+              @change="toggleSelectAll"
+            />
+            <span class="text-md text-neutral-400">Select All</span>
+          </label>
+        </div>
         <Listbox multiple v-model="selectedCategories">
           <ListboxOptions as="div" static>
             <div class="space-y-4">

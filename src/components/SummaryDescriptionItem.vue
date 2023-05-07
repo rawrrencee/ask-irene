@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="pb-6 grid grid-cols-2 gap-1 px-0">
+  <div class="pb-6 flex justify-between gap-4 px-0">
     <div>
       <dt class="text-sm font-medium leading-6 text-gray-900">
         <span>{{ label }}</span>
