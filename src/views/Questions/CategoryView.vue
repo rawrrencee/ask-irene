@@ -28,11 +28,19 @@ categories
     })
     categoriesMap.set(c, { tags: Array.from(tagsMap.keys()), count: activitiesInCategory.length })
   })
+const selectedSelectAll = ref(false)
 const selectedCategories = ref(store.answers.categories ?? [])
 store.answers.categories = selectedCategories.value
 
 watch(selectedCategories, () => {
   store.answers.categories = selectedCategories.value
+})
+watch(selectedSelectAll, (val) => {
+  if (val) {
+    selectedCategories.value = [...categories]
+  } else {
+    selectedCategories.value = []
+  }
 })
 </script>
 
@@ -56,68 +64,79 @@ watch(selectedCategories, () => {
           Please select the categories you'd like to see activity recommendations for.
         </p>
       </div>
-      <Listbox multiple v-model="selectedCategories">
-        <ListboxOptions as="div" static>
-          <div class="space-y-4">
-            <ListboxOption
-              v-slot="{ active, selected }"
-              v-for="category in categories"
-              :key="category"
-              :value="category"
-              as="template"
-            >
-              <div
-                :class="[
-                  active
-                    ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
-                    : '',
-                  selected ? 'bg-sky-900 bg-opacity-75 text-white ' : 'bg-white '
-                ]"
-                class="relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none"
+      <div class="flex flex-col">
+        <label class="flex align-middle pb-3 cursor-pointer gap-2">
+          <input
+            type="checkbox"
+            v-model="selectedSelectAll"
+            class="checkbox"
+            @click="toggleSelectAll"
+          />
+          <span class="text-md text-neutral-400">Select All</span>
+        </label>
+        <Listbox multiple v-model="selectedCategories">
+          <ListboxOptions as="div" static>
+            <div class="space-y-4">
+              <ListboxOption
+                v-slot="{ active, selected }"
+                v-for="category in categories"
+                :key="category"
+                :value="category"
+                as="template"
               >
-                <div class="flex w-full items-center justify-between">
-                  <div class="flex items-center">
-                    <div class="text-sm">
-                      <p
-                        as="p"
-                        :class="selected ? 'text-white' : 'text-gray-900'"
-                        class="font-medium"
-                      >
-                        {{ category }}&nbsp;({{ categoriesMap.get(category).count }})
-                      </p>
-                      <div
-                        :class="[
-                          selected ? 'text-sky-100' : 'text-gray-500',
-                          'flex flex-wrap gap-2 mt-2'
-                        ]"
-                      >
-                        <template v-for="tag in categoriesMap.get(category).tags" :key="tag">
-                          <span
-                            class="items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
-                            >{{ tag }}</span
-                          >
-                        </template>
+                <div
+                  :class="[
+                    active
+                      ? 'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                      : '',
+                    selected ? 'bg-sky-900 bg-opacity-75 text-white ' : 'bg-white '
+                  ]"
+                  class="relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none"
+                >
+                  <div class="flex w-full items-center justify-between">
+                    <div class="flex items-center">
+                      <div class="text-sm">
+                        <p
+                          as="p"
+                          :class="selected ? 'text-white' : 'text-gray-900'"
+                          class="font-medium"
+                        >
+                          {{ category }}&nbsp;({{ categoriesMap.get(category).count }})
+                        </p>
+                        <div
+                          :class="[
+                            selected ? 'text-sky-100' : 'text-gray-500',
+                            'flex flex-wrap gap-2 mt-2'
+                          ]"
+                        >
+                          <template v-for="tag in categoriesMap.get(category).tags" :key="tag">
+                            <span
+                              class="items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+                              >{{ tag }}</span
+                            >
+                          </template>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div v-show="selected" class="shrink-0 text-white">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="12" fill="#fff" fill-opacity="0.2" />
-                      <path
-                        d="M7 13l3 3 7-7"
-                        stroke="#fff"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
+                    <div v-show="selected" class="shrink-0 text-white">
+                      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="12" fill="#fff" fill-opacity="0.2" />
+                        <path
+                          d="M7 13l3 3 7-7"
+                          stroke="#fff"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ListboxOption>
-          </div>
-        </ListboxOptions>
-      </Listbox>
+              </ListboxOption>
+            </div>
+          </ListboxOptions>
+        </Listbox>
+      </div>
     </div>
   </TransitionRoot>
 </template>

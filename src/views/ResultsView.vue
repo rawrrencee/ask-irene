@@ -1,35 +1,75 @@
 <script setup>
 import { ACTIVITIES, QUESTIONS_PAGES } from '@/constants'
 import { useAppStore } from '@/stores'
-import { getCategoryName, getColourClass, openWindow } from '@/util'
-import { Listbox, ListboxOption, ListboxOptions, TransitionRoot } from '@headlessui/vue'
+import { getCategoryName, getColourClass, getLabelForActivityAttribute, openWindow } from '@/util'
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  TransitionRoot
+} from '@headlessui/vue'
 import {
   ArrowTopRightOnSquareIcon,
+  ChevronDownIcon,
   CurrencyDollarIcon,
   MapPinIcon,
   StarIcon
 } from '@heroicons/vue/20/solid'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import NotImplementedDialog from '@/components/NotImplementedDialog.vue'
 
 const store = useAppStore()
 
-const results = ACTIVITIES.filter(
+const filteredResults = ACTIVITIES.filter(
   (a) =>
     a.averageCost <= store.answers.budget &&
     store.answers.categories.includes(a.category) &&
     a.distanceFromIras <= store.answers.distance &&
     a.minParticipants >= store.answers.minParticipants &&
     a.maxParticipants <= store.answers.maxParticipants
-).sort((a, b) => a.distanceFromIras - b.distanceFromIras)
+)
+const results = ref(filteredResults.sort((a, b) => a.distanceFromIras - b.distanceFromIras))
 
 const selectedResults = ref([])
+const selectedSortBy = ref('distanceFromIras')
+const selectedSelectAll = ref(false)
 const isNotImplementedDialogShown = ref(false)
 
 const onUpdateIsNotImplementedDialogShown = (val) => {
   isNotImplementedDialogShown.value = val
 }
+
+watch(selectedSelectAll, (val) => {
+  if (val) {
+    selectedResults.value = results.value.map((r) => r.id)
+  } else {
+    selectedResults.value = []
+  }
+})
+watch(selectedSortBy, (sortBy) => {
+  switch (sortBy) {
+    case 'distanceFromIras':
+    case 'rating':
+    case 'minParticipants':
+    case 'maxParticipants':
+    case 'averageCost':
+      results.value = filteredResults.sort((a, b) => a[sortBy] - b[sortBy])
+      break
+    case 'location':
+    case 'activity':
+    case 'category':
+      results.value = filteredResults.sort((a, b) => {
+        if (a[sortBy] < b[sortBy]) return -1
+        if (a[sortBy] > b[sortBy]) return 1
+        return 0
+      })
+      break
+    default:
+      break
+  }
+})
 </script>
 
 <template>
@@ -50,11 +90,93 @@ const onUpdateIsNotImplementedDialogShown = (val) => {
         <div class="flex flex-col gap-2">
           <h2 class="text-2xl font-semibold leading-7 text-gray-900">Results</h2>
           <p class="mt-1 text-sm leading-6 text-gray-600">
-            Your selected filters returned {{ results.length }} results, sorted by distance from
-            IRAS.
+            Your selected filters returned
+            {{ results.length }} result{{ results.length === 0 || results.length > 1 ? 's' : '' }},
+            sorted by distance from IRAS.
           </p>
         </div>
-        <div>
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between items-center">
+            <div class="form-control">
+              <label class="label cursor-pointer gap-2">
+                <input
+                  type="checkbox"
+                  v-model="selectedSelectAll"
+                  class="checkbox"
+                  @click="toggleSelectAll"
+                />
+                <span class="text-md text-neutral-400">Select All</span>
+              </label>
+            </div>
+            <Listbox
+              class="relative"
+              as="div"
+              v-slot="{ open }"
+              v-model="selectedSortBy"
+              v-if="filteredResults.length > 1"
+            >
+              <ListboxButton
+                as="div"
+                class="flex cursor-pointer flex-row place-items-center gap-1 text-md text-neutral-400 hover:text-indigo-700"
+              >
+                <span>Sort by</span>
+                <ChevronDownIcon
+                  class="h-3 w-3 transition-transform"
+                  :class="{ 'rotate-180 transform': open }"
+                />
+              </ListboxButton>
+              <transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="translate-y-1 opacity-0"
+                enter-to-class="translate-y-0 opacity-100"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="translate-y-0 opacity-100"
+                leave-to-class="translate-y-1 opacity-0"
+              >
+                <ListboxOptions
+                  class="absolute z-30 mt-1 flex min-w-content right-0 flex-col gap-1 rounded-md bg-white shadow-lg"
+                >
+                  <ListboxOption
+                    as="template"
+                    v-for="sortBy of [
+                      'location',
+                      'activity',
+                      'category',
+                      'rating',
+                      'minParticipants',
+                      'maxParticipants',
+                      'averageCost',
+                      'distanceFromIras'
+                    ]"
+                    :key="sortBy"
+                    :value="sortBy"
+                    :disabled="
+                      filteredResults.length === 0 ||
+                      filteredResults.length === 1 ||
+                      selectedSortBy === sortBy
+                    "
+                    v-slot="{ active, disabled, selected }"
+                    ><li
+                      :class="[
+                        disabled
+                          ? 'text-neutral-300'
+                          : active
+                          ? 'bg-gray-400 text-white'
+                          : 'text-gray-900',
+                        'relative cursor-pointer select-none px-3 py-2 text-left first:rounded-t-md last:rounded-b-md'
+                      ]"
+                    >
+                      <span
+                        :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
+                        >{{ getLabelForActivityAttribute(sortBy) }}</span
+                      >
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </Listbox>
+          </div>
+
           <Listbox multiple v-model="selectedResults">
             <ListboxOptions as="div" static>
               <div class="space-y-4">
@@ -156,7 +278,7 @@ const onUpdateIsNotImplementedDialogShown = (val) => {
                   <span class="grid grid-cols-2 isolate rounded-b-lg shadow-md">
                     <button
                       type="button"
-                      class="relative inline-flex justify-start items-center bg-white px-5 py-3 rounded-bl-lg text-xs font-medium text-gray-600 hover:bg-gray-50 focus:z-10 disabled:text-gray-200"
+                      class="relative inline-flex justify-center items-center bg-white px-5 py-3 rounded-bl-lg text-xs font-medium text-gray-600 hover:bg-gray-50 focus:z-10 disabled:text-gray-200"
                       :disabled="!result.googleMapsUrl || result.googleMapsUrl === ''"
                       @click="() => openWindow(result.googleMapsUrl)"
                     >

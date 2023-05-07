@@ -32,6 +32,30 @@ export const getColourClass = (category) => {
   }
 }
 
+export const getLabelForActivityAttribute = (attr) => {
+  switch (attr) {
+    case 'distanceFromIras':
+      return 'Distance from IRAS'
+    case 'rating':
+      return 'Rating'
+    case 'minParticipants':
+      return 'Min. Participants'
+    case 'maxParticipants':
+      return 'Max. Participants'
+    case 'averageCost':
+      return 'Average Cost'
+
+    case 'location':
+      return 'Location Name'
+    case 'activity':
+      return 'Activity Name'
+    case 'category':
+      return 'Category Name'
+    default:
+      return ''
+  }
+}
+
 export const openWindow = (url) => {
   window.open(url)
 }
