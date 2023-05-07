@@ -25,7 +25,7 @@ $size: 175px; // (Fully responsive)
   position: relative;
   height: $size;
   width: $size * 1.13;
-  z-index: 10;
+  z-index: 20;
 }
 // Ears
 .ear {
