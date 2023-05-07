@@ -19,7 +19,7 @@ router.afterEach((to, from) => {
 </script>
 
 <template>
-  <main class="mobile-first grid bg-gray-800">
+  <main class="mobile-first grid bg-gray-800 relative">
     <div class="h-full flex flex-col absolute justify-self-start">
       <div
         class="flex transition-[height] duration-200"
@@ -40,8 +40,8 @@ router.afterEach((to, from) => {
       leave-from="opacity-100 translate-y-0"
       leave-to="opacity-0 -translate-y-full"
     >
-      <div class="flex h-[10%] mt-10">
-        <img src="@/assets/svg/cat.svg" class="self-end w-72" />
+      <div class="flex h-[10%] mt-12">
+        <img src="@/assets/svg/cat.svg" class="self-end w-72 z-10" />
       </div>
       <div class="grow basis-0"></div>
     </TransitionRoot>
@@ -71,20 +71,6 @@ router.afterEach((to, from) => {
         >
           <AnimatedCat />
         </TransitionRoot>
-        <!-- <TransitionRoot
-          :show="!isLanding"
-          as="div"
-          enter="transition duration-700"
-          enter-from="opacity-0 translate-y-full"
-          enter-to="opacity-100 translate-y-0"
-          leave="transition duration-50"
-          leave-from="opacity-100 translate-y-0"
-          leave-to="opacity-0 -translate-y-full"
-        >
-          <div class="flex items-center pt-4 z-0">
-            <img src="@/assets/svg/cat.svg" class="w-72 ml-32" v-if="!isLanding" />
-          </div>
-        </TransitionRoot> -->
       </div>
       <div
         :class="[
