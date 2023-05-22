@@ -7,8 +7,10 @@
   from = "https://lawrencelim.page/*"
   to = "https://lawrencelim.typedream.app"
   status = 301
+  force = true
 
 [[redirects]]
   from = "https://www.lawrencelim.page/*"
   to = "https://lawrencelim.typedream.app"
   status = 301
+  force = true
